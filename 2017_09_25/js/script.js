@@ -195,7 +195,7 @@ function renderGenero(data, compare){
           return d.genero;
         });
 
-  d3.select("#genero").selectAll("div").style("background-color","pink");
+  d3.select("#genero").selectAll("div").style("background-color","#B22222");
 
   if(compare)
     d3.select("#genero")
