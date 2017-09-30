@@ -24,12 +24,11 @@ body {
   text-decoration: none;
 }
 .horizontal ul li a:hover{
-  background-color: #D3D3D3;
-  color: black;
+  background-color: black;
+  color: white;
 }
 .active{
-  background-color: #D3D3D3;
-  color: black;
+  background-color: black;
 }
 .titulo{
   overflow: auto;
