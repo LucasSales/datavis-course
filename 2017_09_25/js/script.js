@@ -40,9 +40,14 @@ function ativarGenero(e){
   $("div").addClass('sumir');
   $("#divGenero").removeClass('sumir');
   $("#divGenero").addClass('ativar');
+
   d3.json("movies.json", function(error, json){
-      renderGenero(json,compareGeneroLucro);
-      d3.selectAll("div.h-bar").classed("customize", true);
+    if(!execute){
+      execute = true;
+      fillGeneros(data);
+    }
+    renderGenero(json,compareGeneroLucro);
+    d3.selectAll("div.h-bar").classed("customize", true);
   });
 }
 
@@ -136,6 +141,7 @@ var compareLucro = function (a, b) {
 };
 
 var generos = [];
+var execute = false;
 function fillGeneros(data){
   var a = {
     genero: "",
@@ -173,7 +179,7 @@ function contain(v, film){
 
 
 function renderGenero(data, compare){
-  fillGeneros(data);
+
   d3.select("#genero").selectAll("div.h-bar")
     .data(generos)
     .enter()
