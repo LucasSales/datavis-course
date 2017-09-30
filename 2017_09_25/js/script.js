@@ -40,7 +40,6 @@ function ativarGenero(e){
   $("div").addClass('sumir');
   $("#divGenero").removeClass('sumir');
   $("#divGenero").addClass('ativar');
-  alert("asdas");
   d3.json("movies.json", function(error, json){
     renderGenero(json,compareGeneroLucro);
     d3.selectAll("div.h-bar").classed("customize", true);

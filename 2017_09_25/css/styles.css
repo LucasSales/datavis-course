@@ -8,14 +8,14 @@ body {
 }
 .horizontal{
   overflow: auto;
-  background: linear-gradient(black,gray);
+  background-image: linear-gradient(to top, #696969, rgba(0,0,0,1));
 }
 .horizontal ul{
   list-style: none;
 }
 .horizontal ul li{
   float: left;
-  
+
 }
 .horizontal ul li a{
   display: block;
