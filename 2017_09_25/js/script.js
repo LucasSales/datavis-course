@@ -40,12 +40,8 @@ function ativarGenero(e){
   $("div").addClass('sumir');
   $("#divGenero").removeClass('sumir');
   $("#divGenero").addClass('ativar');
-
+  alert("asdas");
   d3.json("movies.json", function(error, json){
-    if(!execute){
-      execute = true;
-      fillGeneros(data);
-    }
     renderGenero(json,compareGeneroLucro);
     d3.selectAll("div.h-bar").classed("customize", true);
   });
@@ -143,6 +139,7 @@ var compareLucro = function (a, b) {
 var generos = [];
 var execute = false;
 function fillGeneros(data){
+  generos = [];
   var a = {
     genero: "",
     lucro: 0
@@ -179,7 +176,7 @@ function contain(v, film){
 
 
 function renderGenero(data, compare){
-
+  fillGeneros(data);
   d3.select("#genero").selectAll("div.h-bar")
     .data(generos)
     .enter()

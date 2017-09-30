@@ -15,7 +15,7 @@ body {
 }
 .horizontal ul li{
   float: left;
-  font-family: "Segoe UI",Arial,sans-serif
+  
 }
 .horizontal ul li a{
   display: block;
