@@ -1,22 +1,49 @@
-function ativarBilheteria(){
+function ativarBilheteria(e){
+  $("a").removeClass('active');
+  $(e).addClass('active')
   $("div").addClass('sumir');
   $("#divBilheteria").removeClass('sumir');
   $("#divBilheteria").addClass('ativar');
+
+  d3.json("movies.json", function(error, json){
+      renderBilheteria(json, compareBilheteria);
+      d3.selectAll("div.h-bar").classed("customize", true);
+  });
 }
-function ativarOrcamento(){
+function ativarOrcamento(e){
+  $("a").removeClass('active');
+  $(e).addClass('active')
   $("div").addClass('sumir');
   $("#divOrcamento").removeClass('sumir');
   $("#divOrcamento").addClass('ativar');
+  d3.json("movies.json", function(error, json){
+      renderOrcamento(json, compareOrcamento);
+      d3.selectAll("div.h-bar").classed("customize", true);
+
+  });
 }
-function ativarLucro(){
+function ativarLucro(e){
+  $("a").removeClass('active');
+  $(e).addClass('active')
   $("div").addClass('sumir');
   $("#divLucro").removeClass('sumir');
   $("#divLucro").addClass('ativar');
+  d3.json("movies.json", function(error, json){
+      renderLucro(json, compareLucro);
+      d3.selectAll("div.h-bar").classed("customize", true);
+
+  });
 }
-function ativarGenero(){
+function ativarGenero(e){
+  $("a").removeClass('active');
+  $(e).addClass('active')
   $("div").addClass('sumir');
   $("#divGenero").removeClass('sumir');
   $("#divGenero").addClass('ativar');
+  d3.json("movies.json", function(error, json){
+      renderGenero(json,compareGeneroLucro);
+      d3.selectAll("div.h-bar").classed("customize", true);
+  });
 }
 
 function renderBilheteria(data, compare) {
