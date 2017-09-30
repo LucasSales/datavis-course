@@ -5,192 +5,40 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="css/styles.css">
 	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-	<h1><center>Atividade Visualizacao</center></h1>
-	<h2 id="bilheteria"><b>Gráfico ordenado pelas maiores bilheterias</b></h2>
+	<nav class="titulo">
+    <h1>Atividade Visualização</h1>
+    <span><a href="#">dia/mes/ano</a></span>
+  </nav>
 
-	<h2 id="orcamento"><b>Gráfico ordenado pelo maior orçamento</b></h2>
+	<nav class="horizontal">
+	  <ul>
+	    <li><a href="#" onclick="ativarBilheteria()">Bilheteria</a></li>
+	    <li><a href="#" onclick="ativarOrcamento()">Orçamento</a></li>
+	    <li><a href="#" onclick="ativarLucro()">Lucro</a></li>
+	    <li><a href="#" onclick="ativarGenero()">Genero</a></li>
+	  </ul>
+	</nav>
 
-  <h2 id="lucro"><b>Gráfico ordenado pelo menor lucro</b></h2>
+	<div id="divBilheteria" class="sumir">
+		<h2 id="bilheteria"><b>Gráfico ordenado pelas maiores bilheterias</b></h2>
+	</div>
 
+	<div id="divOrcamento" class="sumir">
+		<h2 id="orcamento"><b>Gráfico ordenado pelo maior orçamento</b></h2>
+	</div>
 
-  <h2 id="genero"><b>Gráfico bilheteria por genero</b></h2>
+  <div id="divLucro" class="sumir">
+  	<h2 id="lucro"><b>Gráfico ordenado pelo menor lucro</b></h2>
+  </div>
 
-  <script type="text/javascript">
-        function renderBilheteria(data, compare) {
-            d3.select("#bilheteria").selectAll("div.h-bar")
-            .data(data)
-            .enter()
-                .append("div")
-                    .attr("class", "h-bar")
-                	.append("span");
+  <div id="divGenero" class="sumir">
+  	<h2 id="genero"><b>Gráfico bilheteria por genero</b></h2>
+  </div>
 
-            d3.select("#bilheteria").selectAll("div.h-bar")
-                .data(data)
-                	.attr("class", "h-bar")
-                	.style("width", function (d) {
-                    	return (d.Worldwide_Gross_M/4) + "px";
-                	})
-                .select("span")
-                    .text(function (d) {
-                        return d.Film;
-                    });
-            if(compare)
-            	d3.select("#bilheteria")
-                	.selectAll("div.h-bar")
-                	.sort(compare);
-
-        }
-
-				var compareBilheteria = function (a, b) {
-        	return a.Worldwide_Gross_M < b.Worldwide_Gross_M? 1:-1;
-    		};
-
-    	function renderOrcamento(data, compare){
-    		d3.select("#orcamento").selectAll("div.h-bar")
-    		.data(data)
-    		.enter()
-    			.append("div")
-    				.attr("class", "h-bar")
-                	.append("span");
-
-            d3.select("#orcamento").selectAll("div.h-bar")
-    		.data(data)
-    			.attr("class","h-bar")
-    			.style("width", function (d){
-    				return (d.Budget_M*4) + "px";
-    			})
-    		.select("span")
-    			.text(function(d){
-    				return d.Film;
-    			});
-
-    		d3.select("#orcamento").selectAll("div").style("background-color","orange");
-
-    		if(compare)
-            	d3.select("#orcamento")
-                	.selectAll("div.h-bar")
-                	.sort(compare);
-
-
-    	}
-
-    	var compareOrcamento = function (a, b) {
-        	return a.Budget_M < b.Budget_M? 1:-1;
-    	};
-
-
-    	function renderLucro(data, compare){
-    		d3.select("#lucro").selectAll("div.h-bar")
-    		.data(data)
-    		.enter()
-    			.append("div")
-    				.attr("class", "h-bar")
-                	.append("span");
-
-            d3.select("#lucro").selectAll("div.h-bar")
-    		.data(data)
-    			.attr("class","h-bar")
-    			.style("width", function (d){
-    				return (d.Worldwide_Gross_M-d.Budget_M)/2 + "px";
-    			})
-    		.select("span")
-    			.text(function(d){
-    				return d.Film;
-    			});
-
-    		d3.select("#lucro").selectAll("div").style("background-color","green");
-
-    		if(compare)
-            	d3.select("#lucro")
-                	.selectAll("div.h-bar")
-                	.sort(compare);
-
-    	}
-
-    	var compareLucro = function (a, b) {
-        	return (a.Worldwide_Gross_M-a.Budget_M) < (b.Worldwide_Gross_M-b.Budget_M)? 1:-1;
-    	};
-
-    	var generos = [];
-    	function teste(data){
-				var a = {
-					genero: "",
-					lucro: 0
-				}
-				a.genero = data[0].Genre;
-				a.lucro = data[0].Worldwide_Gross_M - data[0].Budget_M;
-				generos.push(a);
-    		data.forEach(function(film){
-					contain(generos, film);
-				});
-				console.log(generos);
-    	}
-
-			function contain(v, film){
-				var existe = false;
-				v.forEach(function(e){
-					if(e.genero == film.Genre){
-						if(e.genero == film.Genre){
-							existe = true;
-							e.lucro = e.lucro + film.Worldwide_Gross_M - film.Budget_M;
-						}
-					}
-				});
-				if(!(existe)){
-					var o = {
-						genero: "",
-						lucro: 0
-					}
-					o.genero = film.Genre;
-					o.lucro = film.Worldwide_Gross_M - film.Budget_M;
-					generos.push(o);
-				}
-			}
-
-
-			function renderGenero(data, compare){
-				teste(data);
-				d3.select("#genero").selectAll("div.h-bar")
-				.data(generos)
-				.enter()
-					.append("div")
-						.attr("class", "h-bar")
-									.append("span");
-
-						d3.select("#genero").selectAll("div.h-bar")
-				.data(generos)
-					.attr("class","h-bar")
-					.style("width", function (d){
-						return (d.lucro/10) + "px";
-					})
-				.select("span")
-					.text(function(d){
-						return d.genero;
-					});
-
-				d3.select("#genero").selectAll("div").style("background-color","pink");
-
-				if(compare)
-							d3.select("#genero")
-									.selectAll("div.h-bar")
-									.sort(compare);
-
-			}
-			var compareGeneroLucro = function (a, b) {
-        	return (a.lucro) < (b.lucro)? 1:-1;
-    	};
-
-        d3.json("movies.json", function(error, json){
-            renderBilheteria(json, compareBilheteria);
-            renderOrcamento(json, compareOrcamento);
-            renderLucro(json, compareLucro);
-            renderGenero(json,compareGeneroLucro);
-            d3.selectAll("div.h-bar").classed("customize", true);
-
-        });
-    </script>
+	<script src="js/script.js"></script>
 
 </body>
 </html>
