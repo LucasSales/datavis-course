@@ -19,11 +19,6 @@
     <script type="text/javascript">
       var compositeChart = dc.barChart('#bilheteria');
       d3.json("movies.json", function(error, data){
-        // var dtgFormat = d3.time.format("%Y");
-        // data.forEach(function(d){
-        //     d.Year = Year.parse(d.date);
-        //     d.Worldwide_Gross_M = +d.Worldwide_Gross_M;
-        // });
 
         var facts = crossfilter(data);
 
