@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="css/dc.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/crossfilter.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/dc.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <div>
+      <h1>Bilheteria</h1>
+      <div id="bilheteria"></div>
+    </div>
+
+
+    <script type="text/javascript">
+      var compositeChart = dc.barChart('#bilheteria');
+      d3.json("movies.json", function(error, data){
+        // var dtgFormat = d3.time.format("%Y");
+        // data.forEach(function(d){
+        //     d.Year = Year.parse(d.date);
+        //     d.Worldwide_Gross_M = +d.Worldwide_Gross_M;
+        // });
+
+        var facts = crossfilter(data);
+
+        var dateDim = facts.dimension(function(d){
+            return d.Year;
+        });
+
+        var dataGross = dateDim.group().reduceSum(function(d){
+            return d.Worldwide_Gross_M;
+        });
+
+        compositeChart.width(800)
+                 .height(400)
+                 .margins({top: 30, right: 50, bottom: 25, left: 40})
+                 .dimension(dateDim)
+                 .x(d3.scale.ordinal())
+                 .xUnits(dc.units.ordinal)
+                 .yAxisLabel('Gross')
+                 .barPadding(0.1)
+                 .outerPadding(0.05)
+                 .brushOn(false)
+                 .group(dataGross);
+
+        dc.renderAll();
+      });
+    </script>
+  </body>
+</html>
