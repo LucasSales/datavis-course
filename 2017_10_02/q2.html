@@ -14,10 +14,15 @@
       <h1>Bilheteria</h1>
       <div id="bilheteria"></div>
     </div>
+    <div>
+      <h1>genero</h1>
+      <div id="genero"></div>
+    </div>
 
 
     <script type="text/javascript">
-      var compositeChart = dc.barChart('#bilheteria');
+      var bilheteriaChart = dc.barChart('#bilheteria');
+      var generoChart = dc.barChart('#genero');
       d3.json("movies.json", function(error, data){
 
         var facts = crossfilter(data);
@@ -26,11 +31,15 @@
             return d.Year;
         });
 
+        var generoDim = facts.dimension(function(d){
+            return d.Year;
+        });
+
         var dataGross = dateDim.group().reduceSum(function(d){
             return d.Worldwide_Gross_M;
         });
 
-        compositeChart.width(800)
+        bilheteriaChart.width(800)
                  .height(400)
                  .margins({top: 30, right: 50, bottom: 25, left: 40})
                  .dimension(dateDim)
@@ -41,6 +50,33 @@
                  .outerPadding(0.05)
                  .brushOn(false)
                  .group(dataGross);
+
+        dc.renderAll();
+      });
+      d3.json("movies.json", function(error, data){
+
+        var facts = crossfilter(data);
+
+        var generoDim = facts.dimension(function(d){
+            return d.Genre;
+        });
+
+        var grossGenero = generoDim.group().reduceSum(function(d){
+            return d.Worldwide_Gross_M;
+        });
+
+        generoChart.width(800)
+                 .height(400)
+                 .margins({top: 30, right: 50, bottom: 25, left: 40})
+                 .dimension(generoDim)
+                 .x(d3.scale.ordinal())
+                 .xUnits(dc.units.ordinal)
+                 .yAxisLabel('Gross')
+                 .barPadding(0.1)
+                 .ordering(function(d){ return -d.value })
+                 .outerPadding(0.05)
+                 .brushOn(false)
+                 .group(grossGenero);
 
         dc.renderAll();
       });
