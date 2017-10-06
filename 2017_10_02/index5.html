@@ -27,7 +27,6 @@
                 d.facebook = +d.facebook;
             });
 
-            //criando um crossfilter
             var facts = crossfilter(data);
 
             var dateDim = facts.dimension(function(d){
