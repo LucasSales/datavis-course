@@ -18,7 +18,6 @@
         var compositeChart = dc.compositeChart('#chart');
 
 		d3.csv("stocks.csv", function(data){
-			// formatando nossos dados
             var dtgFormat = d3.time.format("%Y/%m/%d");
             var fdApple = data[0].apple;
             var fdFacebook = data[0].facebook;
