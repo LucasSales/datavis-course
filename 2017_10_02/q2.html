@@ -10,15 +10,21 @@
     <script src="js/dc.js" charset="utf-8"></script>
   </head>
   <body>
+
+    <nav class="horizontal">
+      <ul>
+        <li><a href="#" onclick="">Bilheteria</a></li>
+        <li><a href="#" onclick="">Gênero</a></li>
+      </ul>
+    </nav>
     <div>
       <h1>Bilheteria</h1>
       <div id="bilheteria"></div>
     </div>
-    <div>
+    <div display="block">
       <h1>genero</h1>
       <div id="genero"></div>
     </div>
-
 
     <script type="text/javascript">
       var bilheteriaChart = dc.barChart('#bilheteria');

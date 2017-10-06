@@ -1,5 +1,61 @@
+*{
+  margin: 0;
+  padding: 1000;
+}
+div{
+  float: none;
+}
+
 body {
     font-family: "helvetica"
 }
 
+.horizontal{
+  overflow: auto;
+  background-image: linear-gradient(to top, #696969, rgba(0,0,0,1));
+}
+.horizontal ul{
+  list-style: none;
+}
+.horizontal ul li{
+  float: left;
 
+}
+.horizontal ul li a{
+  display: block;
+  color: white;
+  padding: 14px;
+  text-decoration: none;
+}
+.horizontal ul li a:hover{
+  background-color: black;
+  color: white;
+}
+.active{
+  background-color: black;
+}
+
+.titulo{
+  overflow: auto;
+  background-color:white ;
+}
+.titulo h1{
+  float: left;
+  font-family: fontawesome;
+  margin: 15px;
+}
+.titulo a{
+  float: right;;
+  font-family: fontawesome;
+  margin: 15px;
+  text-decoration: none;
+  color: black;
+}
+
+.sumir{
+  display: none;
+}
+
+.ativo{
+  display: inline;
+}
