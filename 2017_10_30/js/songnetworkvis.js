@@ -53,21 +53,24 @@ function Network() {
   // Mouseover tooltip function
   function showDetails(node,d, i) {
     var content;
-    content = '<p class="main"><span>' + d.name + "</span></p>" +
-              '<hr class="tooltip-hr">' +
-              '<p class="main">' + d.artist + '</span></p>'
+    content = '<p class="main">' + d.name + '</span></p>';
+    content += '<hr class="tooltip-hr">';
+    content += '<p class="main">' + d.artist + '</span></p>';
+    tooltip.showTooltip(content, d3.event);
 
-    tooltip.showTooltip(content,d3.event)
-
-    return d3.select(node).style("stroke","black").style("stroke-width", 2.0)
+    // highlight the node being moused over
+    return d3.select(this).style("stroke", "black").style("stroke-width", 2.0);
   }
 
   // Mouseout function
   function hideDetails(d, i) {
     tooltip.hideTooltip();
-
-    node.style("stroke", n => "#555")
-        .style("stroke-width", n => 1)
+    // watch out - don't mess with node if search is currently matching
+    node.style("stroke", function(n) {
+    return "#555";
+    }).style("stroke-width", function(n) {
+    return 1.0;
+    });
   }
 
   // enter/exit display for nodes
@@ -84,10 +87,7 @@ function Network() {
           .attr("r",d => d.radius)
           .style("stroke-width",1)
 
-    node.on("mouseover", function(d,i){
-      showDetails(this,d,i);
-    })
-    .on("mouseout", hideDetails);
+    node.on("mouseover", showDetails).on("mouseout", hideDetails);
   }
 
   // enter/exit display for links
