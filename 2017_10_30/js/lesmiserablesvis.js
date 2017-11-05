@@ -1,7 +1,7 @@
 function Network() {
   var allData = [],
       width = 960,
-      height = 800,
+      height = 960,
       // our force directed layout
       force = d3.layout.force(),
       // these will point to the circles and lines
@@ -27,17 +27,32 @@ function Network() {
     return nodesMap;
   }
 
+  function getGraphMap(data){
+    var map = {};
+    data.nodes.forEach(n => {
+      map[n.id] = 0;
+      data.links.forEach(l => {
+        if(l.source == n.id || l.target == n.id)
+          map[n.id] += 1;
+      });
+    });
+    return map;
+  }
+
   function setupData(data){
     var circleRadius, countExtent;
 
-    countExtent = d3.extent(data.nodes, d => d.playcount);
+    var graphMap = getGraphMap(data);
+
+    countExtent = d3.extent(data.nodes, d => graphMap[d.id] );
     circleRadius = d3.scale.sqrt().range([3, 15]).domain(countExtent);
 
     data.nodes.forEach(n => {
       n.x = Math.floor(Math.random() * width);
       n.y = Math.floor(Math.random() * height);
 
-      n.radius = circleRadius(n.playcount);
+      n.degree = graphMap[n.id];
+      n.radius = circleRadius(graphMap[n.id]);
     });
 
     var nodesMap = mapNodes(data.nodes);
@@ -53,9 +68,9 @@ function Network() {
   // Mouseover tooltip function
   function showDetails(node,d, i) {
     var content;
-    content = '<p class="main"><span>' + d.name + "</span></p>" +
+    content = '<p class="main"><span>' + d.id + "</span></p>" +
               '<hr class="tooltip-hr">' +
-              '<p class="main">' + d.artist + '</span></p>'
+              '<p class="main">' + d.degree + '</span></p>'
 
     tooltip.showTooltip(content,d3.event)
 
@@ -73,6 +88,7 @@ function Network() {
   // enter/exit display for nodes
   function updateNodes() {
     //select all node elements in svg group of nodes
+    //select all node elements in svg group of nodes
     node = nodesG.selectAll("circle.node")
     .data(allData.nodes, d => d.id);
 
@@ -82,6 +98,7 @@ function Network() {
           .attr("cx",d => d.x)
           .attr("cy",d => d.y)
           .attr("r",d => d.radius)
+          .attr("fill","red")
           .style("stroke-width",1)
 
     node.on("mouseover", function(d,i){
@@ -134,7 +151,7 @@ function Network() {
     force.size([width,height]);
 
     // set the tick callback, charge and linkDistance
-    force.on("tick", forceTick).charge(-200).linkDistance(50);
+    force.on("tick", forceTick).charge(-100).linkDistance(50);
 
     // setup nodes and links
     force.nodes(allData.nodes);
