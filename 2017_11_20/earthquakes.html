@@ -24,29 +24,41 @@
               integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
               crossorigin=""></script>
             <style type="text/css">
-  
-              
+
+
             </style>
         </head>
         <body>
             <div class='container-fluid'>
                 <h1> Earthquakes in New Zealand </h1>
                 <div id="mapid"></div>
-        
+
                 <div id='magnitude-chart'>
-                  <h4> Number of Events by Magnitude </h4>
+                  <h4>Number of Events by Magnitude
+                  <span>
+                  <a class="reset"
+                  href="javascript:magnitudeChart.filterAll();dc.redrawAll();"
+                  style="display: none;"> reset
+                  </a>
+                  </span></h4>
                 </div>
-                    
+
                 <div id='depth-chart'>
-                  <h4> Events by Depth (km) </h4>
+                  <h4> Events by Depth (km)
+                  <span>
+                  <a class="reset"
+                  href="javascript:depthChart.filterAll();dc.redrawAll();"
+                  style="display: none;"> reset
+                  </a>
+                  </span></h4>
                 </div>
-                   
+
                 <div>
                     <div id='time-chart'>
                       <h4> Events per hour </h4>
                     </div>
                 </div>
-                
+
 
                 <table class="table table-hover" id="dc-table-graph">
                     <thead>
@@ -66,14 +78,20 @@
             var magnitudeChart = dc.barChart("#magnitude-chart");
             var depthChart = dc.barChart("#depth-chart");
             var timeChart = dc.lineChart("#time-chart");
+
+            var markers = d3.map();
+            var markerLayer = L.layerGroup();
+
+            //ids
+            var idDimension, idGrouping;
             var map = L.map('mapid').setView([-41.05,172.93], 5);
             L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> contributors',
                         maxZoom: 17
-                        }).addTo(map);
-
+                      });
+            map.on('moveend', updateFilters);
             // load data from a csv file
-            d3.csv("earthquakes.csv", function (data) {
+            d3.csv("data/earthquakes.csv", function (data) {
               // format our data
               var dtgFormat = d3.time.format.utc("%Y-%m-%dT%H:%M:%S");
 
@@ -90,11 +108,18 @@
                         fillColor: '#fecc5c',
                         fillOpacity: 0.5
                     }).addTo(map);
-                circle.bindPopup("Magnitude: "+d.mag+"<br>Time: "+d.dtg);
+                    circle.bindPopup("Magnitude: "+d.mag+"<br>Time: "+d.dtg);
+                    circle.publicid = d.publicid; //this is for linking on the other direction
+                    markers.set(d.publicid, circle);
               });
               //console.log(data);
+
               // Run the data through crossfilter and load our 'facts'
+
               var facts = crossfilter(data);
+              var all = facts.groupAll();
+              idDimension = facts.dimension(function(d) { return d.publicid; });
+              idGrouping = idDimension.group(function(id) { return id; });
 
               //Create dataTable dimension using the date (dtg)
              var dateDimension = facts.dimension(function (d){
@@ -115,7 +140,7 @@
              });
 
               //Create a group for Depth that just counts the number of elements in the group
-             var depthDimensionCount = depthDimension.group(); 
+             var depthDimensionCount = depthDimension.group();
 
               // Create a dimension just for the hour from the datetime in the dataset
               //hint: use d3.time.hour() function
@@ -128,7 +153,7 @@
               //Create a group for the hour dimension that just counts the number of elements per hour
 
               // Setup the charts
-    
+
               // Configure Magnitude Bar Graph
               // 480 x 150
               // x dimension domain: [0, 8]
@@ -143,7 +168,10 @@
                   .centerBar(true)
                   .gap(56)
                   .x(d3.scale.linear().domain([0, 8]))
-                  .elasticY(true); 
+                  .elasticY(true)
+                  .on("filtered", function(chart,filter){
+                    updateMarkers();
+                  });
 
               // Configure Depth bar graph
               // 480 x 150
@@ -157,7 +185,10 @@
                   .centerBar(true)
                   .gap(1)
                   .x(d3.scale.linear().domain([0, 100]))
-                  .elasticY(true);
+                  .elasticY(true)
+                  .on("filtered", function(chart,filter){
+                    updateMarkers();
+                  });
               // Configure Time line graph
               // height: 150
               //x dimension: build the time scale from the data: d3.time.scale().domain(d3.extent(data, function(d) { return d.dtime; }))
@@ -188,8 +219,45 @@
 
               // Render the Charts
               dc.renderAll();
-  
+              updateMarkers(); //this function will be defined below
             });
+            function updateMarkers(){
+              var ids = idGrouping.all();
+              var todisplay = new Array(ids.length); //preallocate array to be faster
+              var mc = 0; //counter of used positions in the array
+              for (var i = 0; i < ids.length; i++) {
+                var tId = ids[i];
+                if(tId.value > 0){ //when an element is filtered, it has value > 0
+                  todisplay[mc] = markers.get(tId.key);
+                  mc = mc + 1;
+                }
+              }
+              todisplay.length = mc; //resize the array so Leaflet does not complain
+              markerLayer.clearLayers(); //remove markers in layerGroup
+              if (map.hasLayer(markerLayer)){
+                map.removeLayer(markerLayer); //remove layerGroup if present
+              }
+              markerLayer = L.layerGroup(todisplay).addTo(map); //add it again passing the array of markers
+            }
+
+            function updateFilters(){
+              var ids = idGrouping.all();
+              var todisplay = new Array(ids.length); //preallocate array to be faster
+              var mc = 0; //counter of used positions in the array
+              markerLayer.eachLayer(function(layer) {
+                if( map.getBounds().contains(layer.getLatLng()) ){
+                  todisplay[mc] = layer.publicid;
+                  mc++;
+                }
+                  //add layer.publicid to some array visibleMarkers
+                });
+
+              idDimension.filterFunction(function(d){
+                return visibleMarkers.indexOf(d) > -1;
+              });
+
+              dc.redrawAll();
+            }
             </script>
 
             <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -197,6 +265,6 @@
             <!-- Include all compiled plugins (below), or include individual files as needed -->
              <!-- Latest compiled and minified JavaScript -->
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-                
+
         </body>
 </html>
